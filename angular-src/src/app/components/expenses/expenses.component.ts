@@ -42,6 +42,21 @@ export class ExpensesComponent implements OnInit {
     list.entries.unshift(newEntry);
     localStorage.setItem('budget', JSON.stringify(list));
     this.list.entries.unshift(newEntry);
+    
+    //send user expense
+    let user = JSON.parse(localStorage.getItem('user'));
+    let entry = {
+      id: user.username,
+      expense: newEntry
+    }
+    this.expenseService.sendExpense(entry).subscribe(data => {
+      console.log(entry, data)
+      if (data.success) {
+        this.flashMessage.show('Updated', {cssClass: 'alert-success', timeout: 4000});
+      } else {
+        this.flashMessage.show('Oh snap! Something happened. Please try again!', {cssClass: 'alert-danger', timeout: 6000});
+      }
+    });
     this.amount = '';
     this.category = '';
     this.datepickerModel = '';
@@ -56,15 +71,5 @@ export class ExpensesComponent implements OnInit {
     }  */
 
 
-    //send user expense
-    /*
-    this.expenseService.sendExpense(user).subscribe(data => {
-      if (data.success) {
-        this.flashMessage.show('Updated', {cssClass: 'alert-success', timeout: 4000});
-      } else {
-        this.flashMessage.show('Oh snap! Something happened. Please try again!', {cssClass: 'alert-danger', timeout: 5500});
-      }
-    });
-  };
-}
-*/
+    
+

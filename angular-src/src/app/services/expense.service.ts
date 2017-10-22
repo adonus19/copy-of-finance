@@ -13,11 +13,10 @@ export class ExpenseService {
 
   constructor(private http: Http) { }
 
-  sendExpense(user) {
+  sendExpense(newEntry) {
     let headers = new Headers();
-    headers.append('Id', this.user.id);
     headers.append('Content-Type', 'application/json');
-    return this.http.post('http://localhost:3000/users/expenses', user, {headers: headers})
+    return this.http.put('http://localhost:3000/users/expenses', newEntry, {headers: headers})
     .map(res => res.json());
   }
 
@@ -27,5 +26,4 @@ export class ExpenseService {
     this.authToken = token;
     this.user = user;
   }
-
 }

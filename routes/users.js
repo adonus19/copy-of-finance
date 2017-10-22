@@ -4,7 +4,8 @@ const express = require('express'),
       Expense = require('../models/user'),
       passport = require('passport'),
       jwt = require('jsonwebtoken'),
-      config = require('../config/database');
+      config = require('../config/database'),
+      _ = require('lodash');
 
 //Register
 router.post('/register', (req, res, next) => {
@@ -60,30 +61,33 @@ router.get('/dashboard', passport.authenticate('jwt', {session: false}), (req, r
 });
 
 //log expenses    test code
-router.put('/expenses/:id', (req, res, next) => {
-    User.findById(req.params.id, (err, user) => {
+router.put('/expenses', (req, res, next) => {
+    let newExpense = new Expense({
+        category: req.body.category,
+        amount: req.body.amount,
+        datepickerModel: req.body.datepickerModel
+    });
+    User.findById(req.body.id, (err, user) => {
+        console.log()
         if (err) {
             res.json({success: false, msg: 'could not find user', error: err});
         }
         if (user) {
-            let newExpense = new Expense({
-                category: req.body.category,
-                amount: req.body.amount,
-                datepickerModel: req.body.datepickerModel
-            });
             _.merge(user, newExpense);
             user.save((err) => {
-                res.json({success: false, msg: 'error during new expense log', error: err});
+                if (err) {
+                    res.json({success: false, msg: 'error during new expense log', error: err});
+                }
+                res.json({success: true, msg: 'expense logged succesfully'});
             });
         } else {
             res.json({msg: 'user not found'});
         }
     });
-    res.json(newExpense);
 });
 
 router.get('/expenses', (req, res, next) => {
-    
+    console.log(res.send(this.user.username));
 });
 
 module.exports = router;
