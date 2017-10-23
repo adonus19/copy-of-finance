@@ -9,13 +9,15 @@ const express = require('express'),
 
 //Register
 router.post('/register', (req, res, next) => {
+    console.log(req.body);
     let newUser = new User({
         name: req.body.name,
         email: req.body.email,
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        expenses: []
     });
-    
+    console.log(newUser);
     User.addUser(newUser, (err, user) => {
         if (err) {
             res.json({success: false, msg: 'Failed to register user'});
@@ -63,17 +65,19 @@ router.get('/dashboard', passport.authenticate('jwt', {session: false}), (req, r
 //log expenses    test code
 router.put('/expenses', (req, res, next) => {
     let newExpense = new Expense({
-        category: req.body.category,
-        amount: req.body.amount,
-        datepickerModel: req.body.datepickerModel
+        category: req.body.expense.category,
+        amount: req.body.expense.amount,
+        datepickerModel: req.body.expense.datepickerModel
     });
-    User.findById(req.body.id, (err, user) => {
-        console.log()
+    User.getUserById(req.body.id, (err, user) => {
+        console.log('A', newExpense);
         if (err) {
             res.json({success: false, msg: 'could not find user', error: err});
         }
         if (user) {
-            _.merge(user, newExpense);
+            console.log('B', user, newExpense);
+            user.expenses.push(newExpense);
+            console.log('C', user.expenses);
             user.save((err) => {
                 if (err) {
                     res.json({success: false, msg: 'error during new expense log', error: err});
